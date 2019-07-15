@@ -1,4 +1,5 @@
 var express = require('express');
+const http = require('http');
 let appConfig = require('./Config/appConfig')
 let fs = require('fs')
 let mongoose = require('mongoose')
@@ -6,8 +7,11 @@ let bodyParser = require('body-parser')
 //let cookieParser = require('cookie-parser')
 let globalErrorMiddleware = require('./Middlewares/appErrorHandler');
 const routeLoggerMiddleware = require('./Middlewares/routeLogger');
+const helmet = require('helmet');
+const logger = require('./Library/loggerInfo')
 
 var app = express();
+
 
 //middlewares
 app.use(bodyParser.json())
@@ -15,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false}))
 //app.use(cookieParser())
 app.use(globalErrorMiddleware.globalErrorHandler);
 app.use(routeLoggerMiddleware.logIp);
+app.use(helmet());
 
 
 //Bootstrap models
