@@ -74,18 +74,22 @@ let createBlog = (req,res) =>{
         category: req.body.category,
         author : req.body.author,
         created : today,
-        lastModified : time.now()
+        lastModified : time.now(),
+        tags:req.body.tags
     }) //end create blog
 
-    let tags = (req.body.tags != undefined && req.body.tags != null && req.body.tags != '') ? req.body.tags.split(',') : []
-    newBlog.tags = tags
+    // let tags = (req.body.tags != undefined && req.body.tags != null && req.body.tags != '') ? req.body.tags.split(',') : []
+    // let tags = req.body.tags? req.body.tags:[];
+    // newBlog.tags = tags
 
     newBlog.save((err,result) =>{
         if(err){
-            logger.error(err.message, 'Blog Controller : createBlog', 10);
+            // return res.send(err);
+            logger.captureError(err.message, 'Blog Controller : createBlog', 10);
             let apiResponse = response.generate(true,err,500,null);
             res.send(apiResponse);
         } else{
+            console.log(result);
             logger.captureInfo('Blog Created Successfully','Blog Controller : createBlog', 5);
             let apiResponse = response.generate(false,'Blog Created Successfully',200,result);
             res.send(apiResponse);
@@ -159,11 +163,92 @@ let deleteBlog = (req,res) =>{
     })
 }
 
+//Split Name functionality
+let splitName = (req,res) =>{
+    console.log(req.query.fullName);
+    let name = req.query.fullName;
+    let nameSplit = name.split(' ');
+    let splittedName = {
+        firstName : nameSplit[0],
+        secondName : nameSplit[1]
+    };
+    res.send(splittedName);
+}//end Split Name functionality
+
+//calculate Age functionality
+let calculateAge = (req,res) =>{
+    console.log(req.query.dob);
+    let today = new Date();
+    let date = new Date(req.query.dob);
+    let diff = today.getFullYear() - date.getFullYear();
+    // console.log(diff);
+    let exactAge = {
+        age: diff
+    }
+    res.send(exactAge);
+}// End calculate Age functionality
+
+//Get user by id
+let getAllUser = (req,res) =>{
+    BlogModel.find()
+    .select('-__v -__id')
+    .lean()
+    .exec((err, result) =>{
+        if(err){
+            res.send('Failed to show users');
+        }
+        else if (check.isEmpty(result)){
+            res.send('Users Not Found');
+        }
+        else{
+            res.send(result);
+        }
+    })
+}
+
+//create User
+let createUser = (req,res) =>{
+    let blogId = shortid.generate()
+    let newBlog = new BlogModel({
+        title : req.body.title,
+        blogId : blogId,
+        userId : req.body.userId,
+        firstName : req.body.firstName,
+        lastName : req.body.lastName,
+        email : req.body.email
+    });
+    newBlog.save((err,result) =>{
+        if(err){
+            res.send(err);
+        }
+        else {
+            res.send(result);
+        }
+    })
+}
+//Get user by Id
+let getUserById = (req,res) =>{
+    BlogModel.findOne({'userId' : req.query.userId}, (err,result) =>{
+        if(err){
+            res.send('Error Occured');
+        } else if(result === undefined || result === null || result === ''){
+            res.send('Blog Not Found');
+        } else{
+            res.send(result);
+        }
+    })
+}
+
 module.exports = {
     getAllBlogs:getAllBlogs,
     viewByBlogId:viewByBlogId,
     createBlog:createBlog,
     editBlog:editBlog,
     increaseBlogView:increaseBlogView,
-    deleteBlog: deleteBlog
+    deleteBlog: deleteBlog,
+    splitName : splitName,
+    calculateAge : calculateAge,
+    getAllUser : getAllUser,
+    createUser : createUser,
+    getUserById :getUserById
 }
