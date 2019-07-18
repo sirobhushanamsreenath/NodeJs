@@ -7,6 +7,11 @@ const authentication = require('./../Middlewares/authentication')
 
 let setRouter = (app) => {
     let baseUrl = appConfig.apiVersion+'/blogs';
+    app.get(baseUrl+'/split/name',blogController.splitName);
+    app.get(baseUrl+'/calculate/age',blogController.calculateAge);
+    app.post(baseUrl+'/createUser',blogController.createUser);
+    app.get(baseUrl+'/users',blogController.getAllUser);
+    app.get(baseUrl+'/users/:userId',blogController.getUserById);
     app.get(baseUrl+'/all', blogController.getAllBlogs);
     /**
      * @api {Get} /api/v1/blogs/all Get All Blogs

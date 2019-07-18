@@ -10,7 +10,7 @@ let blogSchema = new Schema(
         },
         title :{
             type: String,
-            default: ''
+            required:true
         },
         description :{
             type: String,
@@ -36,7 +36,10 @@ let blogSchema = new Schema(
             type: String,
             default:''
         },
-        tags:[],
+        tags:{
+            type:Object,
+            default:[]
+        },
         created:{
             type: Date,
             default: Date.now
@@ -44,7 +47,33 @@ let blogSchema = new Schema(
         lastModified : {
             type : Date,
             default : Date.now
+        },
+        fullName: {
+            type : String,
+            default : ''
+        },
+        firstName: {
+            type:String,
+            default : ''
+        },
+        lastName : {
+            type:String,
+            default: ''
+        },
+        dob:{
+            type: String,
+            default : Date.Now
+        },
+        userId: {
+            type: String,
+            unique: true
+        },
+        email: {
+            type: String,
+            default: ''
         }
+
+
     }
 )
 
